@@ -55,13 +55,22 @@ public class CassandraRing extends Agent {
                             Double rl = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest", "Read", "OneMinuteRate");
                             Double wl = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest", "Write", "OneMinuteRate");
 
+                            Integer cpt = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Compaction", "name=PendingTasks"), "Value");
+                            Integer mpt = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "path=internal", "scope=MemtablePostFlusher", "name=PendingTasks"), "Value");
+                            //org.apache.cassandra.metrics:type=,path=,scope=,name=
+
                             //System.out.println("test: " + JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.db", "type=ColumnFamilies", "keyspace=system", "columnfamily=peers"), "WriteCount"));
 
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "microseconds", rsl + rl));
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Writes", "microseconds", wl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Compaction/PendingTasks", "count", cpt));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/MemtableFlush/PendingTasks", "count", mpt));
 
-                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "microseconds", rsl + rl));
-                            metrics.add(new Metric("Cassandra/global/Latency/Writes", "microseconds", wl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "mu", rsl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "mu", rl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Writes", "mu", wl));
+
+                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "mu", rsl));
+                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "mu", rl));
+                            metrics.add(new Metric("Cassandra/global/Latency/Writes", "mu", wl));
 
                             return metrics;
                         }
