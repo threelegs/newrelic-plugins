@@ -1,0 +1,15 @@
+**/.settings
+**/.classpath
+**/.project
+**/target
+target
+logs
+.settings
+.classpath
+.project
+.DS_Store
+dist
+build
+bin
+config/newrelic.properties
+config/application.conf

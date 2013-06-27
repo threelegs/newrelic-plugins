@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="newrelic_cassandra_extension" default="dist" basedir=".">
+
+	<property name="version" value="0.0.1" />
+	<property name="filename" value="newrelic_cassandra_plugin-${version}" />
+	<property name="jarfile" value="${filename}.jar" />
+	<property name="tarfile" value="${filename}.tar.gz" />
+
+	<property name="build.dir" location="build" />
+	<property name="build.classes.dir" value="${build.dir}/classes" />
+	<property name="build.jar.dir" value="${build.dir}/jar" />
+	<property name="build.tar.dir" value="${build.dir}/tar" />
+	<property name="build.tar.src.dir" value="${build.tar.dir}/${filename}" />
+
+	<property name="dist.dir" location="dist" />
+	<property name="src.dir" location="src" />
+	<property name="lib.dir" location="lib" />
+	<property name="conf.dir" location="config" />
+
+	<property name="platform-metrics-java" value="${lib.dir}/metrics_publish-1.0.1.jar" />
+	<property name="typesafe-config" value="${lib.dir}/config-1.0.1.jar" />
+
+	<path id="classpath">
+		<pathelement location="${platform-metrics-java}" />
+		<pathelement location="${typesafe-config}" />
+	</path>
+
+	<target name="clean">
+		<echo>Cleaning project...</echo>
+		<delete dir="${build.dir}" />
+		<echo>Done.</echo>
+	</target>
+
+	<target name="init" depends="clean">
+		<echo>Creating directory: ${build.dir}</echo>
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<!--  Compile the java code  -->
+		<echo>Building project...</echo>
+		<mkdir dir="${build.classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${build.classes.dir}" target="1.6" source="1.6">
+			<classpath refid="classpath" />
+		</javac>
+		<echo>Done.</echo>
+	</target>
+
+	<target name="jar" depends="compile" description="create a Jar file for the application">
+		<mkdir dir="${build.jar.dir}" />
+		<tstamp />
+		<jar destfile="${build.jar.dir}/${jarfile}">
+			<manifest>
+				<attribute name="Specification-Title" value="Cassandra Plugin" />
+				<attribute name="Specification-Vendor" value="3legs" />
+				<attribute name="Implementation-Vendor" value="3legs" />
+				<attribute name="Built-Date" value="${TODAY}" />
+				<attribute name="Specification-Version" value="${version}" />
+				<attribute name="Implementation-Version" value="${version} ${TODAY}" />
+				<attribute name="Main-Class" value="ar.com.threelegs.newrelic.cassandra.Main" />
+			</manifest>
+			<fileset dir="${build.classes.dir}" />
+			<zipfileset src="${platform-metrics-java}" />
+			<zipfileset src="${typesafe-config}" />
+		</jar>
+	</target>
+
+	<target name="dist" depends="jar" description="create a downloadable file">
+		<mkdir dir="${build.tar.src.dir}" />
+		<copy todir="${build.tar.src.dir}/config">
+			<fileset dir="${conf.dir}" />
+		</copy>
+		<copy file="LICENSE" todir="${build.tar.src.dir}" />
+		<copy file="README.md" todir="${build.tar.src.dir}" />
+		<copy file="${build.jar.dir}/${jarfile}" todir="${build.tar.src.dir}" />
+		<tar compression="gzip" destfile="${dist.dir}/${tarfile}">
+			<tarfileset dir="${build.tar.dir}" />
+		</tar>
+	</target>
+</project>
