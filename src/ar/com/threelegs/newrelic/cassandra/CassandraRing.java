@@ -56,36 +56,41 @@ public class CassandraRing extends Agent {
                             Double rl = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest", "Read", "OneMinuteRate");
                             Double wl = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest", "Write", "OneMinuteRate");
 
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "micros", rsl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "micros", rl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Writes", "micros", wl));
+                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "micros", rsl));
+                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "micros", rl));
+                            metrics.add(new Metric("Cassandra/global/Latency/Writes", "micros", wl));
+
                             // System
                             Integer cpt = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Compaction", "name=PendingTasks"), "Value");
                             Long mpt = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=ThreadPools", "path=internal", "scope=MemtablePostFlusher", "name=PendingTasks"), "Value");
 
-                            // Cache
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/KeyCache/HitRate", "rate",
-                                    (Double) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=KeyCache", "name=HitRate"), "Value")));
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/KeyCache/Size", "bytes",
-                                    (Long) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=KeyCache", "name=Size"), "Value")));
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/KeyCache/Entries", "count",
-                                    (Integer) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=KeyCache", "name=Entries"), "Value")));
-
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/RowCache/HitRate", "rate",
-                                    (Double) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=RowCache", "name=HitRate"), "Value")));
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/RowCache/Size", "bytes",
-                                    (Long) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=RowCache", "name=Size"), "Value")));
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/RowCache/Entries", "count",
-                                    (Integer) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=RowCache", "name=Entries"), "Value")));
-
                             metrics.add(new Metric("Cassandra/hosts/" + host + "/Compaction/PendingTasks", "count", cpt));
                             metrics.add(new Metric("Cassandra/hosts/" + host + "/MemtableFlush/PendingTasks", "count", mpt));
 
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "micros", rsl));
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "micros", rl));
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Writes", "micros", wl));
+                            // Cache
+                            Double kchr = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=KeyCache", "name=HitRate"), "Value");
+                            Long kcs = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=KeyCache", "name=Size"), "Value");
+                            Integer kce = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=KeyCache", "name=Entries"), "Value");
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/KeyCache/HitRate", "rate", kchr));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/KeyCache/Size", "bytes", kcs));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/KeyCache/Entries", "count", kce));
+                            metrics.add(new Metric("Cassandra/global/Cache/KeyCache/HitRate", "rate", kchr));
+                            metrics.add(new Metric("Cassandra/global/Cache/KeyCache/Size", "bytes", kcs));
+                            metrics.add(new Metric("Cassandra/global/Cache/KeyCache/Entries", "count", kce));
 
-                            // Globals
-                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "micros", rsl));
-                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "micros", rl));
-                            metrics.add(new Metric("Cassandra/global/Latency/Writes", "micros", wl));
+                            Double rchr = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=RowCache", "name=HitRate"), "Value");
+                            Long rcs = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=RowCache", "name=Size"), "Value");
+                            Integer rce = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=RowCache", "name=Entries"), "Value");
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/RowCache/HitRate", "rate", rchr));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/RowCache/Size", "bytes", rcs));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/RowCache/Entries", "count", rce));
+                            metrics.add(new Metric("Cassandra/global/Cache/RowCache/HitRate", "rate", rchr));
+                            metrics.add(new Metric("Cassandra/global/Cache/RowCache/Size", "bytes", rcs));
+                            metrics.add(new Metric("Cassandra/global/Cache/RowCache/Entries", "count", rce));
+
 
                             return metrics;
                         }

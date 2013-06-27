@@ -13,5 +13,6 @@ logs
 dist
 build
 bin
+out
 config/newrelic.properties
 config/application.conf
