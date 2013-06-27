@@ -45,36 +45,54 @@ public class CassandraRing extends Agent {
                 System.out.println("getting metrics for host [" + host + "]...");
 
                 try {
-                    allMetrics.addAll(JMXHelper.run(host, config.getString("jmx_port"), new JMXTemplate<List<Metric>>() {
+                    List<Metric> metrics = JMXHelper.run(host, config.getString("jmx_port"), new JMXTemplate<List<Metric>>() {
                         @Override
                         public List<Metric> execute(MBeanServerConnection connection) throws Exception {
 
                             ArrayList<Metric> metrics = new ArrayList<Metric>();
 
+                            // Latency
                             Double rsl = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest", "RangeSlice", "OneMinuteRate");
                             Double rl = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest", "Read", "OneMinuteRate");
                             Double wl = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest", "Write", "OneMinuteRate");
 
+                            // System
                             Integer cpt = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Compaction", "name=PendingTasks"), "Value");
                             Long mpt = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=ThreadPools", "path=internal", "scope=MemtablePostFlusher", "name=PendingTasks"), "Value");
-                            //org.apache.cassandra.metrics:type=,path=,scope=,name=
 
-                            //System.out.println("test: " + JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.db", "type=ColumnFamilies", "keyspace=system", "columnfamily=peers"), "WriteCount"));
+                            // Cache
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/KeyCache/HitRate", "rate",
+                                    (Double) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=KeyCache", "name=HitRate"), "Value")));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/KeyCache/Size", "bytes",
+                                    (Long) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=KeyCache", "name=Size"), "Value")));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/KeyCache/Entries", "count",
+                                    (Integer) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=KeyCache", "name=Entries"), "Value")));
+
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/RowCache/HitRate", "rate",
+                                    (Double) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=RowCache", "name=HitRate"), "Value")));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/RowCache/Size", "bytes",
+                                    (Long) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=RowCache", "name=Size"), "Value")));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Cache/RowCache/Entries", "count",
+                                    (Integer) JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Cache", "scope=RowCache", "name=Entries"), "Value")));
 
                             metrics.add(new Metric("Cassandra/hosts/" + host + "/Compaction/PendingTasks", "count", cpt));
                             metrics.add(new Metric("Cassandra/hosts/" + host + "/MemtableFlush/PendingTasks", "count", mpt));
 
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "mu", rsl));
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "mu", rl));
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Writes", "mu", wl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "micros", rsl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "micros", rl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Writes", "micros", wl));
 
-                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "mu", rsl));
-                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "mu", rl));
-                            metrics.add(new Metric("Cassandra/global/Latency/Writes", "mu", wl));
+                            // Globals
+                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "micros", rsl));
+                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "micros", rl));
+                            metrics.add(new Metric("Cassandra/global/Latency/Writes", "micros", wl));
 
                             return metrics;
                         }
-                    }));
+                    });
+
+                    if (metrics != null)
+                        allMetrics.addAll(metrics);
                 } catch (Exception e) {
                     System.out.println("exception processing host: " + host);
                     e.printStackTrace();
@@ -83,10 +101,14 @@ public class CassandraRing extends Agent {
             }
 
             System.out.println("pushing " + allMetrics.size() + " metrics...");
+            int dropped = 0;
             for (Metric m : allMetrics) {
-                reportMetric(m.name, m.valueType, m.value);
+                if (m.value != null && !m.value.toString().equals("NaN"))
+                    reportMetric(m.name, m.valueType, m.value);
+                else
+                    dropped++;
             }
-            System.out.println("pushing metrics: done!");
+            System.out.println("pushing metrics: done! dropped metrics: " + dropped);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
