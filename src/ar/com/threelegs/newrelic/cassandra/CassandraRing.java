@@ -57,11 +57,11 @@ public class CassandraRing extends Agent {
 
                             //System.out.println("test: " + JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.db", "type=ColumnFamilies", "keyspace=system", "columnfamily=peers"), "WriteCount"));
 
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "millis", rsl + rl));
-                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Writes", "millis", wl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Reads", "microseconds", rsl + rl));
+                            metrics.add(new Metric("Cassandra/hosts/" + host + "/Latency/Writes", "microseconds", wl));
 
-                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "mills", rsl + rl));
-                            metrics.add(new Metric("Cassandra/global/Latency/Writes", "millis", wl));
+                            metrics.add(new Metric("Cassandra/global/Latency/Reads", "microseconds", rsl + rl));
+                            metrics.add(new Metric("Cassandra/global/Latency/Writes", "microseconds", wl));
 
                             return metrics;
                         }

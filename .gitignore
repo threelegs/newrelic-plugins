@@ -8,6 +8,8 @@ logs
 .classpath
 .project
 .DS_Store
+.idea
+*.iml
 dist
 build
 bin
