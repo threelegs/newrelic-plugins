@@ -21,7 +21,6 @@ public class Main {
 		}
 
 		try {
-			// Never returns
 			runner.setupAndRun();
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
