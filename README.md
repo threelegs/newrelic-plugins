@@ -51,6 +51,13 @@ To run the plugin in from the command line and detach the process so it will run
 
 *Another note: At present there are no [init.d](http://en.wikipedia.org/wiki/Init) scripts to start the New Relic Cassandra plugin at system startup.*
 
+Keep in mind that the plugin connects to your cassandra nodes using RMI, so check if you need to edit *cassandra-env.sh* and alter the rmi hostname configuration (may not be needed, it depends on your network)  
+Look for this section:  
+    # jmx: metrics and administration interface
+    #
+    # add this if you're having trouble connecting:
+    # JVM_OPTS="$JVM_OPTS -Djava.rmi.server.hostname=
+
 ## Keep this process running
 You can use services like these to manage this process.
 
@@ -61,4 +68,4 @@ You can use services like these to manage this process.
 
 
 ## For support
-Plugin support for troubleshooting assistance can be obtained by visiting [the 3legs homepage](http://3legs.com.ar)
+Plugin support for troubleshooting assistance can be obtained by visiting [the 3legs homepage](http://3legs.com.ar) or the [plugin issues page](https://github.com/threelegs/newrelic-cassandra/issues)
