@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project name="newrelic_cassandra_extension" default="dist" basedir=".">
 
-	<property name="version" value="0.0.1" />
+	<property name="version" value="0.0.2" />
 	<property name="filename" value="newrelic_cassandra_plugin-${version}" />
 	<property name="jarfile" value="${filename}.jar" />
-	<property name="tarfile" value="${filename}.tar.gz" />
+	<property name="tarfile_all" value="${filename}.tar.gz" />
+	<property name="tarfile_ring" value="${filename}-ring.tar.gz" />
+	<property name="tarfile_host" value="${filename}-host.tar.gz" />
+	<property name="tarfile_data" value="${filename}-data.tar.gz" />
 
 	<property name="build.dir" location="build" />
 	<property name="build.classes.dir" value="${build.dir}/classes" />
@@ -28,6 +31,7 @@
 	<target name="clean">
 		<echo>Cleaning project...</echo>
 		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
 		<echo>Done.</echo>
 	</target>
 
@@ -65,19 +69,47 @@
 		</jar>
 	</target>
 
-	<target name="dist" depends="jar" description="create a downloadable file">
+	<target name="prepare" depends="jar" description="prepare package">
 		<mkdir dir="${build.tar.src.dir}" />
 		<copy todir="${build.tar.src.dir}/config">
 			<fileset dir="${conf.dir}">
 				<exclude name="application.conf" />
+				<exclude name="activation.conf" />
 				<exclude name="newrelic.properties" />
 			</fileset>
 		</copy>
 		<copy file="LICENSE" todir="${build.tar.src.dir}" />
 		<copy file="README.md" todir="${build.tar.src.dir}" />
 		<copy file="${build.jar.dir}/${jarfile}" todir="${build.tar.src.dir}" />
-		<tar compression="gzip" destfile="${dist.dir}/${tarfile}">
+	</target>
+
+	<target name="dist_all" depends="prepare" description="create a downloadable file">
+		<copy file="env/all/activation.conf" overwrite="true" todir="${build.tar.src.dir}/config" />
+		<tar compression="gzip" destfile="${dist.dir}/${tarfile_all}">
 			<tarfileset dir="${build.tar.dir}" />
 		</tar>
 	</target>
+
+	<target name="dist_ring" depends="prepare" description="create a downloadable file">
+		<copy file="env/ring/activation.conf" overwrite="true" todir="${build.tar.src.dir}/config" />
+		<tar compression="gzip" destfile="${dist.dir}/${tarfile_ring}">
+			<tarfileset dir="${build.tar.dir}" />
+		</tar>
+	</target>
+
+	<target name="dist_host" depends="prepare" description="create a downloadable file">
+		<copy file="env/host/activation.conf" overwrite="true" todir="${build.tar.src.dir}/config" />
+		<tar compression="gzip" destfile="${dist.dir}/${tarfile_host}">
+			<tarfileset dir="${build.tar.dir}" />
+		</tar>
+	</target>
+
+	<target name="dist_data" depends="prepare" description="create a downloadable file">
+		<copy file="env/data/activation.conf" overwrite="true" todir="${build.tar.src.dir}/config" />
+		<tar compression="gzip" destfile="${dist.dir}/${tarfile_data}">
+			<tarfileset dir="${build.tar.dir}" />
+		</tar>
+	</target>
+
+	<target name="dist" depends="dist_all, dist_ring, dist_host, dist_data" description="create a downloadable file" />
 </project>
