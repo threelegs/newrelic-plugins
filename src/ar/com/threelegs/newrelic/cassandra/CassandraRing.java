@@ -3,13 +3,14 @@ package ar.com.threelegs.newrelic.cassandra;
 import ar.com.threelegs.newrelic.cassandra.jmx.ConnectionException;
 import ar.com.threelegs.newrelic.cassandra.jmx.JMXHelper;
 import ar.com.threelegs.newrelic.cassandra.jmx.JMXTemplate;
+import ar.com.threelegs.newrelic.cassandra.util.CassandraHelper;
+
 import com.newrelic.metrics.publish.Agent;
 import com.typesafe.config.Config;
 
 import javax.management.MBeanServerConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,7 +23,7 @@ public class CassandraRing extends Agent {
 	private Config config;
 
 	public CassandraRing(Config config) {
-		super("ar.com.3legs.newrelic.cassandra", "0.0.1");
+		super("ar.com.3legs.newrelic.cassandra.ring", "0.0.2");
 		this.name = config.getString("name");
 		this.config = config;
 	}
@@ -38,7 +39,7 @@ public class CassandraRing extends Agent {
 		List<Metric> allMetrics = new ArrayList<Metric>();
 		try {
 			System.out.println("getting ring hosts from discovery_host " + config.getString("discovery_host"));
-			List<String> ringHosts = getRingHosts();
+			List<String> ringHosts = CassandraHelper.getRingHosts(config.getString("discovery_host"), config.getString("jmx_port"));
 
 			System.out.println("getting metrics for hosts [" + ringHosts + "]...");
 
@@ -122,7 +123,7 @@ public class CassandraRing extends Agent {
 							metrics.add(new Metric("Cassandra/global/Cache/RowCache/HitRate", "rate", rchr));
 							metrics.add(new Metric("Cassandra/global/Cache/RowCache/Size", "bytes", rcs));
 							metrics.add(new Metric("Cassandra/global/Cache/RowCache/Entries", "count", rce));
-
+							
 							return metrics;
 						}
 
@@ -180,27 +181,4 @@ public class CassandraRing extends Agent {
 			System.out.println("pushing metrics: done! dropped metrics: " + dropped);
 		}
 	}
-
-	@SuppressWarnings("rawtypes")
-	private List<String> getRingHosts() throws Exception {
-
-		return JMXHelper.run(config.getString("discovery_host"), config.getString("jmx_port"), new JMXTemplate<List<String>>() {
-			@Override
-			public List<String> execute(MBeanServerConnection connection) throws Exception {
-				List<String> ret = new ArrayList<String>();
-
-				Map m = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.db", null, "DynamicEndpointSnitch", null, "Scores");
-
-				if (m != null) {
-					for (Object key : m.keySet()) {
-						ret.add(key.toString().replaceFirst("/", ""));
-					}
-				}
-
-				return ret;
-			}
-		});
-
-	}
-
 }

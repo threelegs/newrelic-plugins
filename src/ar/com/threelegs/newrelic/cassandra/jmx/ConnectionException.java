@@ -1,7 +1,7 @@
 package ar.com.threelegs.newrelic.cassandra.jmx;
 
 /**
- * @author jformoso
+ * @author juanformoso
  */
 public class ConnectionException extends Exception {
 
