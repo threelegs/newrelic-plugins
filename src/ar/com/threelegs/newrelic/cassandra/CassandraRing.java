@@ -23,7 +23,7 @@ public class CassandraRing extends Agent {
 	private Config config;
 
 	public CassandraRing(Config config) {
-		super("ar.com.3legs.newrelic.cassandra.ring", "0.0.2");
+		super("ar.com.3legs.newrelic.cassandra", "0.0.2");
 		this.name = config.getString("name");
 		this.config = config;
 	}
