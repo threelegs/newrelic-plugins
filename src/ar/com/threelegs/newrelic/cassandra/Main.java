@@ -22,6 +22,12 @@ public class Main {
 			}
 		}
 
+		if (activation.getBoolean("varnish")) {
+			for (Config c : config.getConfigList("varnish")) {
+				runner.register(new Varnish(c));
+			}
+		}
+
 		try {
 			runner.setupAndRun();
 		} catch (ConfigurationException e) {

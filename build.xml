@@ -6,6 +6,7 @@
 	<property name="jarfile" value="${filename}.jar" />
 	<property name="tarfile_all" value="${filename}.tar.gz" />
 	<property name="tarfile_cassandra" value="${filename}-cassandra.tar.gz" />
+	<property name="tarfile_varnish" value="${filename}-varnish.tar.gz" />
 
 	<property name="build.dir" location="build" />
 	<property name="build.classes.dir" value="${build.dir}/classes" />
@@ -88,5 +89,12 @@
 		</tar>
 	</target>
 
-	<target name="dist" depends="dist_cassandra" description="create a downloadable file" />
+	<target name="dist_varnish" depends="prepare" description="create a downloadable file">
+		<copy file="env/varnish/activation.conf" overwrite="true" todir="${build.tar.src.dir}/config" />
+		<tar compression="gzip" destfile="${dist.dir}/${tarfile_varnish}">
+			<tarfileset dir="${build.tar.dir}" />
+		</tar>
+	</target>
+
+	<target name="dist" depends="dist_cassandra, dist_varnish" description="create a downloadable file" />
 </project>

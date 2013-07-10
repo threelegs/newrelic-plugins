@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class CassandraRing extends Agent {
 
-	private String name = "Default";
+	private String name;
 	private Config config;
 
 	public CassandraRing(Config config) {
