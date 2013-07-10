@@ -16,3 +16,4 @@ bin
 out
 config/newrelic.properties
 config/application.conf
+deploy
