@@ -96,7 +96,8 @@ public class Varnish extends Agent {
 		} finally {
 			System.out.println("pushing " + allMetrics.size() + " metrics...");
 			for (Metric m : allMetrics) {
-				System.out.println(m.name + "[" + m.valueType + "] --> " + m.value);
+				// System.out.println(m.name + "[" + m.valueType + "] --> " +
+				// m.value);
 				reportMetric(m.name, m.valueType, m.value);
 			}
 			System.out.println("done!");
