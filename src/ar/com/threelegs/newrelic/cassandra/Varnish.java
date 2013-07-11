@@ -43,6 +43,7 @@ public class Varnish extends Agent {
 		units.put(Pattern.compile("cache_.*"), "requests");
 		units.put(Pattern.compile("fetch_.*"), "fetchs");
 		units.put(Pattern.compile("n_wrk.*"), "threads");
+		units.put(Pattern.compile("n_object"), "objects");
 
 		groups.put(Pattern.compile("n_wrk.*"), "threads");
 	}
@@ -96,8 +97,8 @@ public class Varnish extends Agent {
 		} finally {
 			System.out.println("pushing " + allMetrics.size() + " metrics...");
 			for (Metric m : allMetrics) {
-				// System.out.println(m.name + "[" + m.valueType + "] --> " +
-				// m.value);
+//				 System.out.println(m.name + "[" + m.valueType + "] --> " +
+//				 m.value);
 				reportMetric(m.name, m.valueType, m.value);
 			}
 			System.out.println("done!");
