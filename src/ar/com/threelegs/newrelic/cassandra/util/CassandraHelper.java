@@ -27,7 +27,8 @@ public class CassandraHelper {
 				if (m != null) {
 					for (Object key : m.keySet()) {
                         String val = key.toString();
-                        ret.add(val.substring(0, val.indexOf("/")));
+
+                        ret.add(val.substring(val.indexOf("/")+1, val.length()));
 					}
 				}
 
