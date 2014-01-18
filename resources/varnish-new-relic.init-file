@@ -1,0 +1,89 @@
+#!/bin/sh
+#
+# rc file for Varnish New Relic plugin
+#
+### BEGIN INIT INFO
+# Provides:          varnish-new-relic
+# Required-Start:    $network $local_fs $remote_fs
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Varnish New Relic plugin
+# Description:       Varnish New Relic plugin
+### END INIT INFO
+
+NAME="New Relic plugin for Varnish"
+SCRIPTNAME="/etc/init.d/varnish-new-relic"
+
+#You may change these values to match your installation
+PLUGIN_PATH=/opt/varnish-new-relic
+FILE_NAME=newrelic_3legs_plugin-0.0.2.jar
+USER=deployer
+#stop changing
+
+#
+# Start the application
+#
+do_start() {
+        cd $PLUGIN_PATH  
+        su $USER -c "java -jar $PLUGIN_PATH/$FILE_NAME > /dev/null &"
+}
+
+#
+# Stop the application
+#
+do_stop() {
+        PID=`ps aux | grep $FILE_NAME | cut -d' ' -f2`
+        kill -9 $PID
+}
+
+#
+# Check if the application is runnig
+# Returns 0 if it is running
+#
+do_check()
+{
+    lines=`ps aux | grep $FILE_NAME | wc -l`
+    if [ $lines -eq 2 ]
+    then
+        return 0
+    fi
+    return 1
+}
+
+case "$1" in
+    start)
+        echo "Starting $NAME"
+        do_check 
+        case "$?" in
+            1) do_start ;;
+            0) echo "$NAME is already running" ;;
+        esac
+        ;;
+    stop)
+        echo "Stopping $NAME"
+        do_stop
+        ;;
+    status)
+        do_check 
+        case "$?" in
+            1) echo "$NAME is NOT running" ;;
+            0) echo "$NAME is running" ;;
+        esac
+        ;;
+    restart)
+        echo "Restarting $DESC" "$NAME"
+        do_check 
+        case "$?" in
+            1) echo "$NAME was not running... I'll start it for you" ;;
+            0) do_stop ;;
+        esac        
+        do_start
+        ;;
+    *)
+        echo "Usage: $SCRIPTNAME {start|stop|status|restart}" >&2
+        exit 1
+    ;;
+esac
+
+:

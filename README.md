@@ -58,7 +58,7 @@ To run the plugin in from the command line and detach the process so it will run
 
 *Note: we currently only support Cassandra version 1.2.X or above, we could add support for older versions if there is enough demand.*
 
-*Another note: At present there are no [init.d](http://en.wikipedia.org/wiki/Init) scripts to start the New Relic plugin at system startup.*
+*Another note: You may use a [init.d](http://en.wikipedia.org/wiki/Init) script to start the New Relic plugin at system startup. Read more below.*
 
 Keep in mind that the plugin connects to your cassandra nodes using RMI, so check if you need to edit *cassandra-env.sh* and alter the rmi hostname configuration (may not be needed, it depends on your network)  
 Look for this section:  
@@ -74,6 +74,32 @@ You can use services like these to manage this process.
 - [Systemd](http://www.freedesktop.org/wiki/Software/systemd/)
 - [Runit](http://smarden.org/runit/)
 - [Monit](http://mmonit.com/monit/)  
+
+## Create a init.d file
+
+The plugin comes with a init.d file to start and stop the plugin form the command line. The first thing you need to do to install the script is to copy it **to /etc/init.d/**
+
+``` bash
+cp /path/to/repo/resources/varnish-new-relic.init-file /etc/init.d/varnish-new-relic
+```
+Look at the beginning of the **/etc/init.d/varnish-new-relic** file. There is three parameters that you may have to change. They are
+* PLUGIN_PATH - This is the path to where you unzipped the plugin
+* FILE_NAME - This is the name of the .jar
+* USER - This is the user that will execute the .jar. Make sure he has permission to read and execute the PLUGIN_PATH and the FILE_NAME.
+
+Now you need to tell the system that the file exists and that you want to use it.
+``` bash
+insserv /etc/init.d/varnish-new-relic
+```
+You are all set. The plugin will automatically start with you system. You may also run these commands as root:
+``` bash
+/etc/init.d/varnish-new-relic start
+/etc/init.d/varnish-new-relic stop
+/etc/init.d/varnish-new-relic status
+/etc/init.d/varnish-new-relic restart
+```
+
+
 
 
 ## For support
