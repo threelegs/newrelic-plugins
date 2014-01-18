@@ -77,10 +77,11 @@ You can use services like these to manage this process.
 
 ## Create a init.d file
 
-The plugin comes with a init.d file to start and stop the plugin form the command line. The first thing you need to do to install the script is to copy it **to /etc/init.d/**
+The plugin comes with a init.d file to start and stop the plugin form the command line. The first thing you need to do to install the script is to copy it to **/etc/init.d/** and make it executable.
 
 ``` bash
 cp /path/to/repo/resources/varnish-new-relic.init-file /etc/init.d/varnish-new-relic
+chmod 744 /etc/init.d/varnish-new-relic
 ```
 Look at the beginning of the **/etc/init.d/varnish-new-relic** file. There is three parameters that you may have to change. They are
 * PLUGIN_PATH - This is the path to where you unzipped the plugin
