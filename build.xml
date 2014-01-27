@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project name="newrelic_cassandra_extension" default="dist" basedir=".">
 
-	<property name="version" value="0.0.2" />
+	<property name="version" value="0.0.3" />
 	<property name="filename" value="newrelic_3legs_plugin-${version}" />
 	<property name="jarfile" value="${filename}.jar" />
 	<property name="tarfile_all" value="${filename}.tar.gz" />
@@ -20,7 +20,7 @@
 	<property name="lib.dir" location="lib" />
 	<property name="conf.dir" location="config" />
 
-	<property name="platform-metrics-java" value="${lib.dir}/metrics_publish-1.0.1.jar" />
+	<property name="platform-metrics-java" value="${lib.dir}/metrics_publish-1.2.2.jar" />
 	<property name="typesafe-config" value="${lib.dir}/config-1.0.1.jar" />
 
 	<path id="classpath">
