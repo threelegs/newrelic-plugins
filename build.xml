@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project name="newrelic_cassandra_extension" default="dist" basedir=".">
+<project name="newrelic-plugins" default="dist" basedir=".">
 
 	<property name="version" value="0.0.3" />
 	<property name="filename" value="newrelic_3legs_plugin-${version}" />
 	<property name="jarfile" value="${filename}.jar" />
 	<property name="tarfile_all" value="${filename}.tar.gz" />
 	<property name="tarfile_cassandra" value="${filename}-cassandra.tar.gz" />
+	<property name="tarfile_jmxremote" value="${filename}-jmxremote.tar.gz" />
 	<property name="tarfile_varnish" value="${filename}-varnish.tar.gz" />
 	<property name="tarfile_full" value="${filename}.tar.gz" />
 
@@ -89,6 +90,13 @@
 			<tarfileset dir="${build.tar.dir}" />
 		</tar>
 	</target>
+	
+	<target name="dist_jmxremote" depends="prepare" description="create a downloadable file">
+		<copy file="env/jmxremote/activation.conf" overwrite="true" todir="${build.tar.src.dir}/config" />
+		<tar compression="gzip" destfile="${dist.dir}/${tarfile_jmxremote}">
+			<tarfileset dir="${build.tar.dir}" />
+		</tar>
+	</target>
 
 	<target name="dist_varnish" depends="prepare" description="create a downloadable file">
 		<copy file="env/varnish/activation.conf" overwrite="true" todir="${build.tar.src.dir}/config" />
@@ -104,5 +112,5 @@
 		</tar>
 	</target>
 
-	<target name="dist" depends="dist_full, dist_cassandra, dist_varnish" description="create a downloadable file" />
+	<target name="dist" depends="dist_full, dist_cassandra, dist_jmxremote, dist_varnish" description="create a downloadable file" />
 </project>
