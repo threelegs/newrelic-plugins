@@ -16,11 +16,10 @@ The Varnish plugin for New Relic requires the following:
 
 The JMX Remote plugin for New Relic requires the following:
 - One or more Java processes that expose JMX MBeans remotely
-  http://stackoverflow.com/questions/856881/how-to-activate-jmx-on-my-jvm-for-access-with-jconsole
+  - http://stackoverflow.com/questions/856881/how-to-activate-jmx-on-my-jvm-for-access-with-jconsole
 
 ## Download
-Download and unpack the New Relic plugin you want from Plugin Central: https://rpm.newrelic.com/plugins/ or the mirror in our
-homepage: http://3legs.com.ar/downloads/newrelic/  
+Download and unpack the New Relic plugin you want from Plugin Central: https://rpm.newrelic.com/plugins/ or the mirror in our homepage: http://3legs.com.ar/downloads/newrelic/  
 
 **All plugin download files contain all plugins ready to use, just edit `activation.conf` to toggle them off and on**
 
