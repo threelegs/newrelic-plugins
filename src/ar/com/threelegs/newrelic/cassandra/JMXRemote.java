@@ -13,11 +13,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-// import java.util.concurrent.TimeUnit;
 
 /**
  * @author juanformoso
@@ -28,17 +24,14 @@ public class JMXRemote extends Agent {
 
 	private String name, host, port, metricPrefix;
 	private List<? extends Config> JMXList;
-	// private Config config;
 	
 	public JMXRemote(Config config, String pluginname, String pluginversion) {
-		// this.pluginName = "ar.com.3legs.newrelic.jmxremote"
 		super(pluginname, pluginversion);
 		this.name = config.getString("name");
 		this.host = config.getString("host");
 		this.port = config.getString("port");
 		this.JMXList = config.getConfigList("metrics");
 		this.metricPrefix = "JMX/hosts/" + host +":" + port;
-		// this.config = config;
 	}
 
 	@Override
