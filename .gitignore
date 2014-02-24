@@ -17,3 +17,4 @@ out
 config/newrelic.properties
 config/application.conf
 deploy
+/newrelic_3legs_plugin-0.0.3

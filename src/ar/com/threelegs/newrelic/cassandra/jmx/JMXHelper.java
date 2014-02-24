@@ -6,15 +6,20 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+
+import ar.com.threelegs.newrelic.cassandra.Metric;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author germanklf
  */
 public class JMXHelper {
-
+	
 	public static <T> T run(String host, String port, JMXTemplate<T> template) throws ConnectionException {
 		JMXServiceURL address;
 		JMXConnector connector = null;
@@ -66,6 +71,32 @@ public class JMXHelper {
 		if (instances != null && instances.size() == 1) {
 			return getAttribute(connection, objectName, attribute);
 		} else {
+			return null;
+		}
+	}
+	
+	public static List<Metric> queryAndGetAttributes(MBeanServerConnection connection, ObjectName objectName, List<String> attributes) throws Exception {
+		List<Metric> returnList = new ArrayList<Metric>();
+		Set<ObjectInstance> instances = queryConnectionBy(connection, objectName);
+		if (instances != null && instances.size() > 0) {
+			for (ObjectInstance thisInstance : instances) {
+				for (String thisAttribute : attributes) {
+					try {
+						returnList.add(new Metric(thisInstance.getObjectName().toString(), thisAttribute, (Number)getAttribute(connection, thisInstance.getObjectName(), thisAttribute)));
+					} catch (Exception e) {
+						// Not a number, won't add metric, but won't crash the dang thing
+						System.out.println("Exception processing query");								
+						System.out.println("failed object: " + thisInstance.getObjectName().toString());
+						System.out.println("failed attribute: " + thisAttribute);
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		if (!returnList.isEmpty()) {
+			return returnList;
+		} else {
+			System.out.println("No results found.");
 			return null;
 		}
 	}

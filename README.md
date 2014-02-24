@@ -3,7 +3,6 @@
 ## Prerequisites
 All plugins for New Relic requires the following:
 - A New Relic account. Signup for a free account at http://newrelic.com
-- A cassandra cluster version 1.2.X+
 - A configured Java Runtime (JRE) environment Version 1.6 or better
 - Network access to New Relic (authenticated proxies are not currently supported, but see workaround below)
 
@@ -15,9 +14,12 @@ The Varnish plugin for New Relic requires the following:
 
 - One or more varnish instances
 
+The JMX Remote plugin for New Relic requires the following:
+- One or more Java processes that expose JMX MBeans remotely
+  - http://stackoverflow.com/questions/856881/how-to-activate-jmx-on-my-jvm-for-access-with-jconsole
+
 ## Download
-Download and unpack the New Relic plugin you want from Plugin Central: https://rpm.newrelic.com/plugins/ or the mirror in our
-homepage: http://3legs.com.ar/downloads/newrelic/  
+Download and unpack the New Relic plugin you want from Plugin Central: https://rpm.newrelic.com/plugins/ or the mirror in our homepage: http://3legs.com.ar/downloads/newrelic/  
 
 **All plugin download files contain all plugins ready to use, just edit `activation.conf` to toggle them off and on**
 
@@ -40,11 +42,19 @@ Linux example:
     # Edit config/newrelic.properties and paste in your license key
 
 ### Configure your Plugin properties
-
 Linux example:
 
     $ cp config/template_application.conf config/application.conf
     # Edit config/application.conf
+
+#### To use the Remote JMX plugin, follow these guidelines when configuring application.conf:
+* If you wish to create your own dashboards, please change the `pluginname` parameter to anything you would like that is unique. The plugin will then report with the classname you define here.
+* The `host`, `port` and `name` (instance name to appear in New Relic UI) are required for each instance.
+* Wildcards ARE permissable in an Object Name, for example: `java.lang:type=GarbageCollector,name=*`
+* Multiple Attributes ARE permissable under an Object Name, for example: `["CollectionCount", "CollectionTime"]`
+* If polling a single Attribute in an Object Name, you will still need to put it inside of '[' and ']', like so: `["CollectionCount"]`
+* `type` is optional. If used, all of the attributes in that ObjectName definition will be typed with what you define here.
+* If `type` is not used, the default "value" will be used for the attribute values in that Object Name.
 
 ## Running the agent
 To run the plugin in from the command line: 
