@@ -13,7 +13,10 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 // import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,25 +61,21 @@ public class JMXRemote extends Agent {
 							for (Config thisMetric : myList) {
 								ObjectName thisObjectName = ObjectName.getInstance(thisMetric.getString("objectname"));
 								String thisMetricType;
-								try {
-									thisMetricType = thisMetric.getString("type");
-								} catch (ConfigException e) {
-									thisMetricType = "value";
-								}
-								
-								for(String thisAttribute : thisMetric.getStringList("attributes")) {
-									try {
-										Object resultValue = JMXHelper.queryAndGetAttribute(connection, thisObjectName, thisAttribute);
-										String metricName = metricPrefix + "/" + thisMetric.getString("objectname").replaceAll(":", "/").replaceAll(",", "/") + "/" + thisAttribute;
-										metrics.add(new Metric(metricName, thisMetricType, (Number) resultValue));								
-									} catch (Exception e) {
-										System.out.println("exception processing metric: " + thisMetric);									
-										e.printStackTrace();
-										System.out.println("failed object: " + thisMetric.getString("objectname"));
-										System.out.println("failed attribute: " + thisAttribute);
+								try { thisMetricType = thisMetric.getString("type"); } catch (ConfigException e) { thisMetricType = "value"; }
+								try { 
+									// Using <Metric> with different assignments for the 2 strings in it.
+									List<Metric> resultValues = JMXHelper.queryAndGetAttributes(connection, thisObjectName, thisMetric.getStringList("attributes"));
+									for (Metric thisValue : resultValues) {
+										String metricName = metricPrefix + "/" + thisValue.name.replaceAll(":", "/").replaceAll(",", "/") + "/" + thisValue.valueType;
+										// Adding actual metric in proper form to metric list.
+										metrics.add(new Metric(metricName, thisMetricType, thisValue.value));
 									}
+								} catch (Exception e) {
+									System.out.println("exception processing metric");									
+									System.out.println("failed object: " + thisMetric.getString("objectname"));
+									e.printStackTrace();
 								}
-							}	
+							}
 							return metrics;
 						}
 					});
