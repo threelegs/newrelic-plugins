@@ -47,14 +47,14 @@ Linux example:
     $ cp config/template_application.conf config/application.conf
     # Edit config/application.conf
 
-To use the Remote JMX plugin, follow these guidelines when configuring application.conf:
-* If you wish to create your own dashboards, please change the "pluginname" to anything you would like that is unique. The plugin will then report with the classname you define here.
-* The host, port and instance name are required for each instance.
-* Wildcards ARE permissable in an Object Name, for example: "java.lang:type=GarbageCollector,name=*"
-* Multiple Attributes ARE permissable under an Object Name, for example: ["CollectionCount", "CollectionTime"]
-* If polling a single Attribute in an Object Name, you will still need to put it inside of '[' and ']', like so: ["CollectionCount"]
-* "type" is optional. If used, all of the attributes in that ObjectName definition will be typed with what you define here.
-* If "type" is not used, the default "value" will be used for the attribute values in that Object Name.
+#### To use the Remote JMX plugin, follow these guidelines when configuring application.conf:
+* If you wish to create your own dashboards, please change the `pluginname` parameter to anything you would like that is unique. The plugin will then report with the classname you define here.
+* The `host`, `port` and `name` (instance name to appear in New Relic UI) are required for each instance.
+* Wildcards ARE permissable in an Object Name, for example: `java.lang:type=GarbageCollector,name=*`
+* Multiple Attributes ARE permissable under an Object Name, for example: `["CollectionCount", "CollectionTime"]`
+* If polling a single Attribute in an Object Name, you will still need to put it inside of '[' and ']', like so: `["CollectionCount"]`
+* `type` is optional. If used, all of the attributes in that ObjectName definition will be typed with what you define here.
+* If `type` is not used, the default "value" will be used for the attribute values in that Object Name.
 
 ## Running the agent
 To run the plugin in from the command line: 
