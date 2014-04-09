@@ -1,0 +1,43 @@
+{
+	"cassandra" : [
+		{
+			"name" : "Your Ring Name",
+			"discovery_host" : "ip or host of one member of the ring",
+			"jmx_port" : 7199
+		}
+	],
+	"varnish" : [
+		{
+			"name" : "instance name",
+			"user" : "ssh remote user (optional)",
+			"host" : "ip or host of the varnish instance (if user is provided)",
+			"instance" : "name of the varnishd instance"
+		}
+	],
+	"jmxremote" : [
+		{
+			"instances" : [
+				{
+					"name" : "the name that will appear in the New Relic UI for this instance",
+					"host" : "jmx host",
+					"port" : "jmx port",
+					"metrics" : [
+						{
+							"objectname" : "org.apache.activemq:type=Broker,brokerName=localhost",
+							"attributes" : [ "TotalEnqueueCount", "TotalDequeueCount" ],
+							"type" : "messages"
+						},
+						{
+							"objectname" : "org.apache.activemq:type=Broker,brokerName=*",
+							"attributes" : [ "MemoryPercentUsage" ]
+						},
+						{
+							"objectname" : "java.lang:type=GarbageCollector,name=*",
+							"attributes" : [ "CollectionCount", "CollectionTime" ]
+						}
+					]
+				}
+			]
+		}
+	]
+}
