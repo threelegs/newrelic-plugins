@@ -15,40 +15,33 @@ public class Main {
 		Runner runner = new Runner();
 
 		Config config = ConfigFactory.parseFile(new File("config/plugin.json"));
+		for (Config c : config.getConfigList("agents")) {
+			String type = c.getString("type");
 
-		if (config.hasPath("cassandra")) {
-			LOGGER.info("instantiating the cassandra agent(s)...");
-			for (Config c : config.getConfigList("cassandra")) {
+			if ("cassandra".equalsIgnoreCase(type)) {
+				LOGGER.info("instantiating the cassandra agent(s)...");
 				String pluginName = c.hasPath("plugin_name") ? c.getString("plugin_name") : Defaults.CASSANDRA_PLUGIN_NAME;
 				String pluginVersion = c.hasPath("plugin_version") ? c.getString("plugin_version") : Defaults.VERSION;
 
 				runner.register(new CassandraRing(c, pluginName, pluginVersion));
-			}
-			LOGGER.info("done!");
-		}
-
-		if (config.hasPath("varnish")) {
-			LOGGER.info("instantiating the varnish agent(s)...");
-			for (Config c : config.getConfigList("varnish")) {
+				LOGGER.info("done!");
+			} else if ("varnish".equalsIgnoreCase(type)) {
+				LOGGER.info("instantiating the varnish agent(s)...");
 				String pluginName = c.hasPath("plugin_name") ? c.getString("plugin_name") : Defaults.VARNISH_PLUGIN_NAME;
 				String pluginVersion = c.hasPath("plugin_version") ? c.getString("plugin_version") : Defaults.VERSION;
 
 				runner.register(new Varnish(c, pluginName, pluginVersion));
-			}
-			LOGGER.info("done!");
-		}
-
-		if (config.hasPath("jmxremote")) {
-			LOGGER.info("instantiating the jmxremote agent(s)...");
-			for (Config c : config.getConfigList("jmxremote")) {
+				LOGGER.info("done!");
+			} else if ("jmxremote".equalsIgnoreCase(type)) {
+				LOGGER.info("instantiating the jmxremote agent(s)...");
 				for (Config i : c.getConfigList("instances")) {
 					String pluginName = i.hasPath("plugin_name") ? i.getString("plugin_name") : Defaults.JMXREMOTE_PLUGIN_NAME;
 					String pluginVersion = i.hasPath("plugin_version") ? i.getString("plugin_version") : Defaults.VERSION;
 
 					runner.register(new JMXRemote(i, pluginName, pluginVersion));
 				}
+				LOGGER.info("done!");
 			}
-			LOGGER.info("done!");
 		}
 
 		try {
