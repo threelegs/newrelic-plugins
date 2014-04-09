@@ -42,7 +42,7 @@ public class Main {
 			LOGGER.info("instantiating the jmxremote agent(s)...");
 			for (Config c : config.getConfigList("jmxremote")) {
 				for (Config i : c.getConfigList("instances")) {
-					String pluginName = i.hasPath("plugin_name") ? i.getString("plugin_name") : Defaults.VARNISH_PLUGIN_NAME;
+					String pluginName = i.hasPath("plugin_name") ? i.getString("plugin_name") : Defaults.JMXREMOTE_PLUGIN_NAME;
 					String pluginVersion = i.hasPath("plugin_version") ? i.getString("plugin_version") : Defaults.VERSION;
 
 					runner.register(new JMXRemote(i, pluginName, pluginVersion));
