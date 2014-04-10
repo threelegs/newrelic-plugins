@@ -1,9 +1,10 @@
 {
-	"cassandra" : [
-		{
-			"name" : "Your Ring Name",
-			"discovery_host" : "ip or host of one member of the ring",
-			"jmx_port" : 7199
-		}
-	]
+  "agents" : [
+    {
+	  "type":"cassandra",	  
+      "name" : "Your Ring Name",
+      "discovery_host" : "ip or host of one member of the ring",
+      "jmx_port" : 7199
+    }
+  ]
 }
