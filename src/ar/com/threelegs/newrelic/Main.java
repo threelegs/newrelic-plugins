@@ -14,7 +14,8 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		Runner runner = new Runner();
 
-		Config config = ConfigFactory.parseFile(new File("config/plugin.json"));
+		Config config = ConfigFactory.parseFile(new File(com.newrelic.metrics.publish.configuration.Config.getConfigDirectory() + File.separator
+				+ "plugin.json"));
 		for (Config c : config.getConfigList("agents")) {
 			String type = c.getString("type");
 
