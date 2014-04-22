@@ -65,6 +65,10 @@ public class Varnish extends Agent {
 			if (config.hasPath("user")) {
 				command += "ssh -t " + config.getString("user") + "@" + config.getString("host");
 			}
+			
+			if (config.hasPath("port")) {
+				command += " -p " + config.getString("port");
+			}
 
 			command += " varnishstat -1 -x";
 
