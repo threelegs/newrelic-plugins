@@ -51,8 +51,16 @@ The unpacked plugin contains all supported plugins, all you need to activate the
 
 All plugins support the `plugin_name` and `plugin_version` property, which you can use if you wish to create your own dashboards instead of using the plugin's default, just change the `plugin_name` parameter to anything you would like that is unique. The plugin will then report with the classname you define here.
 
-#### To use the Remote JMX plugin, follow these guidelines when configuring plugin.json:
-* The `host`, `port` and `name` (instance name to appear in New Relic UI) are required for each instance.
+### IMPORANT - To use the Remote JMX plugin:
+
+* **You MUST set `pluginname="your.arbitrary.name.here"` in `application.conf`, in order to setup custom dashboards and summary metrics.** 
+  - *If you leave the default, then it will appear with a default dashboard, which can't be edited and won't be presenting your JMX counters.*
+* Once you set your own plugin name and it reports in as a new plugin, you'll need to create dashboards and summary metrics to expose your JMX counters. The New Relic Docs offer the best explanation of these capabilities:
+  - https://docs.newrelic.com/docs/plugin-dev/changing-plugin-settings
+  - https://docs.newrelic.com/docs/plugin-dev/creating-summary-metrics-for-plugins
+  - https://docs.newrelic.com/docs/plugin-dev/working-with-plugin-dashboards
+
+* The `host`, `port` and `name` (instance name to appear in New Relic UI) are required for each instance in `application.conf`.
 * Wildcards ARE permissable in an Object Name, for example: `java.lang:type=GarbageCollector,name=*`
 * Multiple Attributes ARE permissable under an Object Name, for example: `["CollectionCount", "CollectionTime"]`
 * If polling a single Attribute in an Object Name, you will still need to put it inside of '[' and ']', like so: `["CollectionCount"]`
