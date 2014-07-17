@@ -63,13 +63,13 @@ public class CassandraRing extends Agent {
 							rsl = toMillis(rsl, rslUnit);
 
 							Double rl = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest",
-									"Read", "OneMinuteRate");
+									"Read", "Mean");
 							TimeUnit rlUnit = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest",
 									"Read", "LatencyUnit");
 							rl = toMillis(rl, rlUnit);
 
 							Double wl = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest",
-									"Write", "OneMinuteRate");
+									"Write", "Mean");
 							TimeUnit wlUnit = JMXHelper.queryAndGetAttribute(connection, "org.apache.cassandra.metrics", "Latency", "ClientRequest",
 									"Write", "LatencyUnit");
 							wl = toMillis(wl, wlUnit);
