@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
+import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -20,6 +21,8 @@ import com.newrelic.metrics.publish.util.Logger;
 public class JMXHelper {
 	
 	private static final Logger LOGGER = Logger.getLogger(JMXHelper.class);
+
+    private static final String COMPOSITE_ATTR_SEPARATOR = ".";
 	
 	public static <T> T run(String host, String port, JMXTemplate<T> template) throws ConnectionException {
 		JMXServiceURL address;
@@ -83,7 +86,18 @@ public class JMXHelper {
 			for (ObjectInstance thisInstance : instances) {
 				for (String thisAttribute : attributes) {
 					try {
-						returnList.add(new Metric(thisInstance.getObjectName().toString(), thisAttribute, (Number)getAttribute(connection, thisInstance.getObjectName(), thisAttribute)));
+                        Object attr = getAttribute(connection, thisInstance.getObjectName(), thisAttribute);
+                        if (attr instanceof CompositeData) {
+                            CompositeData cd = (CompositeData) attr;
+                            for (String key : cd.getCompositeType().keySet()) {
+                                Object value = cd.get(key);
+                                if (value instanceof Number) {
+                                    returnList.add(new Metric(thisInstance.getObjectName().toString(), thisAttribute + COMPOSITE_ATTR_SEPARATOR + key, (Number) value));
+                                }
+                            }
+                        } else {
+						    returnList.add(new Metric(thisInstance.getObjectName().toString(), thisAttribute, (Number) attr));
+                        }
 					} catch (Exception e) {
 						// Not a number, won't add metric, but won't crash the dang thing
 						LOGGER.error(e, "failed object: " + thisInstance.getObjectName().toString(), "failed attribute: " + thisAttribute);
