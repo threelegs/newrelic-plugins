@@ -76,11 +76,22 @@ public class CassandraRing extends Agent {
 							// System
 							Integer cpt = JMXHelper.queryAndGetAttribute(connection,
 									JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics", "type=Compaction", "name=PendingTasks"), "Value");
-							Long mpt = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.metrics",
-									"type=ThreadPools", "path=internal", "scope=MemtablePostFlusher", "name=PendingTasks"), "Value");
+							Long mpt = JMXHelper.queryAndGetAttribute(connection, JMXHelper.getObjectNameByKeys("org.apache.cassandra.internal",
+									"type=MemtablePostFlush"), "PendingTasks");
 
 							metrics.add(new Metric("Cassandra/hosts/" + host + "/Compaction/PendingTasks", "count", cpt));
 							metrics.add(new Metric("Cassandra/hosts/" + host + "/MemtableFlush/PendingTasks", "count", mpt));
+
+							// Storage
+							Double load = JMXHelper.queryAndGetAttribute(connection,
+									JMXHelper.getObjectNameByKeys("org.apache.cassandra.db", "type=StorageService"), "Load");
+							metrics.add(new Metric("Cassandra/host/" + host + "/Storage/Data", "bytes", load));
+							metrics.add(new Metric("Cassandra/global/Storage/Data", "bytes", load));
+
+							Long commitLog = JMXHelper.queryAndGetAttribute(connection,
+									JMXHelper.getObjectNameByKeys("org.apache.cassandra.db", "type=Commitlog"), "TotalCommitlogSize");
+							metrics.add(new Metric("Cassandra/host/" + host + "/Storage/CommitLog", "bytes", commitLog));
+							metrics.add(new Metric("Cassandra/global/Storage/CommitLog", "bytes", commitLog));
 
 							// Cache
 							Double kchr = JMXHelper.queryAndGetAttribute(connection,
