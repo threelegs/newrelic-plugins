@@ -33,7 +33,7 @@ do_start() {
 # Stop the application
 #
 do_stop() {
-        PID=`ps aux | grep $FILE_NAME | cut -d' ' -f2`
+        PID=`ps afx | grep $FILE_NAME | grep -v grep | awk '{print $1}'`
         kill -9 $PID
 }
 
