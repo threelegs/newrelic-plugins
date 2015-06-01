@@ -38,7 +38,7 @@ do_stop() {
 }
 
 #
-# Check if the application is runnig
+# Check if the application is running
 # Returns 0 if it is running
 #
 do_check()
