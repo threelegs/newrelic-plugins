@@ -33,7 +33,7 @@ do_start() {
 # Stop the application
 #
 do_stop() {
-        PID=`ps aux | grep $FILE_NAME | cut -d' ' -f2`
+        PID=`ps aux | grep $PLUGIN_PATH/$FILE_NAME | cut -d' ' -f2`
         kill -9 $PID
 }
 
@@ -43,7 +43,7 @@ do_stop() {
 #
 do_check()
 {
-    lines=`ps aux | grep $FILE_NAME | wc -l`
+    lines=`ps aux | grep $PLUGIN_PATH/$FILE_NAME | wc -l`
     if [ $lines -eq 2 ]
     then
         return 0
