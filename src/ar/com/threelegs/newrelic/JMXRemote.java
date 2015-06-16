@@ -30,7 +30,11 @@ public class JMXRemote extends Agent {
 		this.host = config.getString("host");
 		this.port = config.getString("port");
 		this.JMXList = config.getConfigList("metrics");
-		this.metricPrefix = "JMX/hosts/" + host +":" + port;
+        try {
+            this.metricPrefix = config.getString("prefix");
+        } catch (ConfigException e) {
+            this.metricPrefix = "JMX/hosts/" + host +":" + port;
+        }
 	}
 
 	@Override
