@@ -85,12 +85,12 @@ public class CassandraRing extends Agent {
 							// Storage
 							Double load = JMXHelper.queryAndGetAttribute(connection,
 									JMXHelper.getObjectNameByKeys("org.apache.cassandra.db", "type=StorageService"), "Load");
-							metrics.add(new Metric("Cassandra/host/" + host + "/Storage/Data", "bytes", load));
+							metrics.add(new Metric("Cassandra/hosts/" + host + "/Storage/Data", "bytes", load));
 							metrics.add(new Metric("Cassandra/global/Storage/Data", "bytes", load));
 
 							Long commitLog = JMXHelper.queryAndGetAttribute(connection,
 									JMXHelper.getObjectNameByKeys("org.apache.cassandra.db", "type=Commitlog"), "TotalCommitlogSize");
-							metrics.add(new Metric("Cassandra/host/" + host + "/Storage/CommitLog", "bytes", commitLog));
+							metrics.add(new Metric("Cassandra/hosts/" + host + "/Storage/CommitLog", "bytes", commitLog));
 							metrics.add(new Metric("Cassandra/global/Storage/CommitLog", "bytes", commitLog));
 
 							// Cache
